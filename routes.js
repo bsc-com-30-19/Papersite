@@ -26,7 +26,19 @@ router.post('/sign-up',(req,res) =>{
     const {username, email, password} = req.body;
 
     pool.query(
-        'INSERT INTO users (username, email, password) VALUES($1, $2, $3)',
+        'SELECT * FROM USERAUTH WHERE email = $1',
+        [email],(err, results) =>{
+            if(results.rows.length){
+                res.send('User already exists');
+            }
+            else{
+                res.send('User signed up succesfully');
+            }
+        }
+
+    )
+    pool.query(
+        'INSERT INTO USERAUTH (username, email, password) VALUES($1, $2, $3)',
         [username, email, password],
         (err, results) =>{
             if(err){
