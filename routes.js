@@ -1,5 +1,6 @@
 const express = require('express');
 const {Pool} = require('pg');
+const queries = require('./queries');
 //Make express router
 const router = express.Router();
 
@@ -26,32 +27,29 @@ router.post('/sign-up',(req,res) =>{
     const {username, email, password} = req.body;
 
     pool.query(
-        'SELECT * FROM USERAUTH WHERE email = $1',
-        [email],(err, results) =>{
+        queries.getStudentsByEmail,
+        [email],
+        (err, results) =>{
             if(results.rows.length){
                 res.send('User already exists');
             }
-            else{
-                res.send('User signed up succesfully');
-            }
-        }
-
-    )
-    pool.query(
-        'INSERT INTO USERAUTH (username, email, password) VALUES($1, $2, $3)',
-        [username, email, password],
-        (err, results) =>{
-            if(err){
-                console.error('Error executing query',err);
-                res.status(500).send('Internal server error');
-            }
-            else{
-                res.send('User signed up succesfully');
-            }
-        }
-    )
+            
+            pool.query(
+                queries.addStudent,
+                [username, email, password],
+                (err, results) =>{
+                    if(err){
+                        console.error('Error executing query',err);
+                        res.status(500).send('Internal server error');
+                    }
+                    else{
+                        res.status(201).send('User signed up succesfully');
+                    }
+                }
+            )
+    
 });
-
+});
 //delete user route
 
 
