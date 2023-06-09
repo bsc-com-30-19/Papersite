@@ -1,6 +1,6 @@
 const express = require('express');
 const {Pool} = require('pg');
-const routes = require('./routes');
+const routes = require('./routes/authroutes');
 
 const app = express();
 //Database connection
