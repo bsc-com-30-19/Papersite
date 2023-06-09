@@ -1,9 +1,11 @@
+//moduless
 const express = require("express");
 const { Pool } = require("pg");
+//Routes
 const routes = require("./routes/authroutes");
 const dashroutes = require("./routes/dashboard");
 const fileroutes = require("./routes/filesroutes");
-
+//making express app
 const app = express();
 
 app.get("/", (req, res) => {
@@ -14,7 +16,7 @@ app.get("/", (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/api", routes);
+app.use("/api/authroutes", routes);
 app.use("/api/dashboard", dashroutes);
 app.use("/api/papers", fileroutes);
 
