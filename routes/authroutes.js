@@ -1,20 +1,15 @@
 const express = require("express");
-const { Pool } = require("pg");
-const queries = require("../queries");
+const pool = require("../db")
+const queries = require("../utils/queries");
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("../utils/jwtGenerator");
 //Make express router
 const router = express.Router();
-const validInfo = require("../middleware/validInfo")
+const validInfo = require("../middleware/validInfo");
+const authoriztion = require("../middleware/authoriztion");
 
-//Database connection
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "Papersite",
-  password: "chickenfat",
-  port: 5432,
-});
+
+
 
 //sign in route
 router.post("/log-in", validInfo, async (req, res) => {
@@ -90,5 +85,15 @@ router.get("/users/:id", (req, res) => {
     res.status(200).json(results.rows);
   });
 });
+
+router.get("/is-verify", authoriztion, async (req, res) =>{
+  try{
+    res.json(true)
+  }
+  catch(err){
+    console.error(error.message);
+    res.status(500).send("server error");
+  }
+})
 
 module.exports = router;
