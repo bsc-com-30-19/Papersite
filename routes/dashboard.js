@@ -32,7 +32,8 @@ router.post("/upload", upload.single('file'), authorization, async (req,res) =>{
     try {
         const { originalname, filename, size, path } = req.file;
         const userId = req.user;
-        pool.query(queries.addFile, [userId, filename, path, size]);
+        const course = req.body.course;
+        pool.query(queries.addFile, [userId, filename, path, size, course]);
         res.status.send("File uploaded succsesfully")
     } catch (error) {
         console.error(error.message);
