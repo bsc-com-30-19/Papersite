@@ -2,6 +2,7 @@ const express = require("express");
 const { Pool } = require("pg");
 const routes = require("./routes/authroutes");
 const dashroutes = require("./routes/dashboard");
+const fileroutes = require("./routes/filesroutes");
 
 const app = express();
 
@@ -14,7 +15,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api", routes);
-app.use("/dashboard", dashroutes);
+app.use("/api/dashboard", dashroutes);
+app.use("/api/papers", fileroutes);
+
 app.listen(3200, () => {
   console.log("Server listening on port 3200");
 });

@@ -2,11 +2,25 @@ const pool = require("./db");
 const queries = require("./utils/queries");
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("./utils/jwtGenerator");
+const fs = require("fs");
+const path = require("path");
 
 const validInfo = require("./middleware/validInfo");
 const authoriztion = require("./middleware/authoriztion");
 
-//Log in controller
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: (req, filename, cb) => {
+      cb(null, '../Papers');
+    },
+    filename: (req, file, cb) =>{
+      cb(null, Date.now()+ '-' + path.extname(file.originalname));
+    }
+  });
+const upload = multer({storage: storage});
+
+//User controllers
+
 const logIn = async (req, res) => {
   const { email, password } = req.body;
 
@@ -25,32 +39,107 @@ const logIn = async (req, res) => {
   res.json({ token });
 };
 
-//sign up controller
 const signUp = async (req, res) => {
-    const { username, email, password } = req.body;
-  
-    const user = await pool.query(queries.getStudentsByEmail, [email]);
-  
-    if (user.rows.length !== 0) {
-      return res.status(401).send("User Already Exists");
-    }
-  
-    //Bcrypting password
-    const saltRound = 10;
-    const salt = await bcrypt.genSalt(saltRound);
-    const bcryptPassword = await bcrypt.hash(password, salt);
-  
-    const newUser = await pool.query(queries.addStudent, [
-      username,
-      email,
-      bcryptPassword,
-    ]);
-  
-    const token = jwtGenerator(newUser.rows[0].use_id);
-    res.json({ token });
+  const { username, email, password } = req.body;
+
+  const user = await pool.query(queries.getStudentsByEmail, [email]);
+
+  if (user.rows.length !== 0) {
+    return res.status(401).send("User Already Exists");
   }
+
+  //Bcrypting password
+  const saltRound = 10;
+  const salt = await bcrypt.genSalt(saltRound);
+  const bcryptPassword = await bcrypt.hash(password, salt);
+
+  const newUser = await pool.query(queries.addStudent, [
+    username,
+    email,
+    bcryptPassword,
+  ]);
+
+  const token = jwtGenerator(newUser.rows[0].use_id);
+  res.json({ token });
+};
+
+//File controllers
+const getFiles = async (req, res) => {
+  files = pool.query(queries.getFiles, (err, results) => {
+    try {
+      if (err) throw err;
+      res.status(200).json(results.rows);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("server error");
+    }
+  });
+};
+
+const getFileById = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    pool.query(queries.getFileById, [id], (err, results) => {
+      if (err) throw err;
+      res.status(200).json(results.rows);
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("server error");
+  }
+};
+
+const getFilesByCourse = async (req, res) => {
+  try {
+    const course = req.body;
+    pool.query(queries.getFileById, [course], (err, results) => {
+      if (err) throw err;
+      res.status(200).json(results.rows);
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("server error");
+  }
+};
+
+const fileUpload = async (req,res) =>{
+    try {
+        const { originalname, filename, size, path } = req.file;
+        const userId = req.user;
+        const course = req.body.course;
+        await pool.query(queries.addFile, [userId, filename, path, size, course]);
+        res.status.send("File uploaded succsesfully")
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("An error occured during file upload");
+    }
+}
+
+const deleteFileById = async (req, res) =>{
+    const id = parseInt(req.params.id);
+    
+    const fileq = await pool.query(queries.getFileById, [id]);
+
+    if ((await fileq).rows.length === 0) {
+        return res.status(404).send('File doe not exist');
+    }
+
+    const file = fileq.rows[0];
+    const filePath = path.join(__dirname, '..', 'papers', file.file_path);
+  
+    fs.unlinkSync(filepath);
+
+    await pool.query(queries.deleteFileById, [id]);
+
+    res.send('File deleted succesfully');
+};
 
 module.exports = {
   logIn,
-  signUp
+  signUp,
+  getFileById,
+  getFiles,
+  getFilesByCourse,
+  deleteFileById,
+  fileUpload
 };
