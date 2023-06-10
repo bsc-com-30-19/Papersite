@@ -11,7 +11,7 @@ const controller = require("../controller");
 //get files router
 router.get("/", controller.getFiles);
 //get files by course router
-router.get("/", controller.getFilesByCourse);
+router.get("/:course", controller.getFilesByCourse);
 //Get files by id router
 router.get("/:id", controller.getFileById);
 

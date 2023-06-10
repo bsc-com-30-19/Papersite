@@ -9,7 +9,6 @@ const validInfo = require("./middleware/validInfo");
 const authoriztion = require("./middleware/authoriztion");
 const upload = require("./middleware/fileUpload");
 
-
 //User controllers
 
 const logIn = async (req, res) => {
@@ -86,7 +85,9 @@ const getFiles = async (req, res) => {
   try {
     files = pool.query(queries.getFiles);
     res.status(200).json(files.rows);
-    console.log(path.resolve('C:/Users/paulk/onedrive/documents/projects/Papers/'));
+    console.log(
+      path.resolve("C:/Users/paulk/onedrive/documents/projects/Papers/")
+    );
   } catch (error) {
     console.error(error.message);
     res.status(500).send("server error");
@@ -109,7 +110,7 @@ const getFileById = async (req, res) => {
 
 const getFilesByCourse = async (req, res) => {
   try {
-    const course = req.body;
+    const course = req.params.course;
     await pool.query(queries.getFileById, [course], (err, results) => {
       if (err) throw err;
       res.status(200).json(results.rows);
@@ -121,7 +122,7 @@ const getFilesByCourse = async (req, res) => {
 };
 
 const fileUpload = async (req, res) => {
-     try {
+  try {
     console.log(req.body);
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -135,7 +136,7 @@ const fileUpload = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("An error occured during file upload");
-  } 
+  }
 };
 
 const deleteFileById = async (req, res) => {

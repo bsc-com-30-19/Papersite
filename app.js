@@ -8,10 +8,6 @@ const fileroutes = require("./routes/filesroutes");
 //making express app
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("HELLO WORLD");
-});
-
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
