@@ -7,7 +7,7 @@ const path = require("path");
 
 const validInfo = require("./middleware/validInfo");
 const authoriztion = require("./middleware/authoriztion");
-const upload = require("./fileUpload");
+const upload = require("./middleware/fileUpload");
 
 
 //User controllers

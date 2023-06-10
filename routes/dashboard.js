@@ -3,7 +3,7 @@ const express = require("express");
 const pool = require("../db");
 const queries = require("../utils/queries");
 const authorization = require("../middleware/authoriztion");
-const upload = require("../fileUpload")
+const upload = require("../middleware/fileUpload")
 const controller = require("../controller");
 const path = require("path");
 
