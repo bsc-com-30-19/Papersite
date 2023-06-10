@@ -7,17 +7,8 @@ const path = require("path");
 
 const validInfo = require("./middleware/validInfo");
 const authoriztion = require("./middleware/authoriztion");
+const upload = require("./fileUpload");
 
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, filename, cb) => {
-    cb(null, "../Papers");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage: storage });
 
 //User controllers
 
@@ -95,6 +86,7 @@ const getFiles = async (req, res) => {
   try {
     files = pool.query(queries.getFiles);
     res.status(200).json(files.rows);
+    console.log(path.resolve('C:/Users/paulk/onedrive/documents/projects/Papers/'));
   } catch (error) {
     console.error(error.message);
     res.status(500).send("server error");
@@ -129,16 +121,21 @@ const getFilesByCourse = async (req, res) => {
 };
 
 const fileUpload = async (req, res) => {
-  try {
+     try {
+    console.log(req.body);
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    console.log(req.file);
     const { originalname, filename, size, path } = req.file;
     const userId = req.user;
     const course = req.body.course;
     await pool.query(queries.addFile, [userId, filename, path, size, course]);
-    res.status.send("File uploaded succsesfully");
+    res.status(200).send("File uploaded succsesfully");
   } catch (error) {
     console.error(error.message);
     res.status(500).send("An error occured during file upload");
-  }
+  } 
 };
 
 const deleteFileById = async (req, res) => {

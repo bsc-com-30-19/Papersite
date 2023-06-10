@@ -5,7 +5,7 @@ const getUsers = 'SELECT * FROM "USERAUTH"';
 const getUsersById = 'SELECT * FROM "USERAUTH" WHERE "use_id" = $1 ';
 const deleteUserById = 'DELETE FROM "USERAUTH" WHERE "use_id" = $1';
 //file queries
-const addFile = 'INSERT INTO "FILES" (user_id, file_name, file_path, file_size, course) VALUES($1, $2, $3, $4) RETURNING *';
+const addFile = 'INSERT INTO "FILES" (user_id, file_name, file_path, file_size, course) VALUES($1, $2, $3, $4, $5) RETURNING *';
 const getFiles = 'SELECT * FROM "FILES"';
 const getFileById = 'SELECT * FROM "FILES" WHERE "file_id" = $1';
 const getFilesByCourse = 'SELECT * FROM "FILES" WHERE "course" = $1';

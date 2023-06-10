@@ -14,9 +14,9 @@ app.get("/", (req, res) => {
 
 //Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/authroutes", routes);
+app.use("/api/auth", routes);
 app.use("/api/dashboard", dashroutes);
 app.use("/api/papers", fileroutes);
 
